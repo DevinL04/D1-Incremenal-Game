@@ -7,7 +7,7 @@ document.body.innerHTML = `
 `;
 
 /* --- new: create a button entirely from TypeScript --- */
-const emoji = "🍎";                 // fun emoji (not a cookie)
+const emoji = "🍎"; // fun emoji (not a cookie)
 const btn = document.createElement("button");
 
 btn.id = "magic-button";
