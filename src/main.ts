@@ -26,7 +26,13 @@ btn.addEventListener("click", () => {
   counterDiv.textContent = `${counter} apples`; // update the number of apples displayed
 });
 
-//append the button and message
+// Step 3: Auto clicking every second
+setInterval(() => {
+  counter++; //+1
+  counterDiv.textContent = `${counter} apples`;
+  }, 1000); // 1000ms == 1s
+
+//Add to the page
 const container = document.createElement("div");
 container.className = "magic-container";
 container.appendChild(btn);
