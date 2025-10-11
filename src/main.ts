@@ -30,7 +30,7 @@ btn.addEventListener("click", () => {
 setInterval(() => {
   counter++; //+1
   counterDiv.textContent = `${counter} apples`;
-  }, 1000); // 1000ms == 1s
+}, 1000); // 1000ms == 1s
 
 //Add to the page
 const container = document.createElement("div");
