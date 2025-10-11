@@ -46,11 +46,10 @@ function update(time: number) {
   //Updating the display
   counterDiv.textContent = `${Math.floor(counter)} apples`;
 
-  requestAnimationFrame(update);// schedules the next fram
+  requestAnimationFrame(update); // schedules the next fram
 }
 // start animation loop
 requestAnimationFrame(update);
-
 
 //Add to the page
 const container = document.createElement("div");
