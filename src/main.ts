@@ -27,10 +27,30 @@ btn.addEventListener("click", () => {
 });
 
 // Step 3: Auto clicking every second
+/*
 setInterval(() => {
   counter++; //+1
   counterDiv.textContent = `${counter} apples`;
 }, 1000); // 1000ms == 1s
+*/
+
+// Step 4: Continuous growth with requestAnimationFrame
+let lastTime = performance.now();
+
+function update(time: number) {
+  const dt = (time - lastTime) / 1000; //delta time inseconds
+  lastTime = time;
+
+  // +1 per second, but scaled by dt
+  counter += dt;
+  //Updating the display
+  counterDiv.textContent = `${Math.floor(counter)} apples`;
+
+  requestAnimationFrame(update);// schedules the next fram
+}
+// start animation loop
+requestAnimationFrame(update);
+
 
 //Add to the page
 const container = document.createElement("div");
