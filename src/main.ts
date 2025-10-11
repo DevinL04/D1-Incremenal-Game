@@ -19,7 +19,8 @@ let counter: number = 0;
 const counterDiv = document.createElement("div");
 counterDiv.id = "counter-display";
 counterDiv.textContent = `${counter} apples`;
-
+// Step 5:
+let growthRate = 0;
 // When the button is clicked the counter increases
 btn.addEventListener("click", () => {
   counter++;
@@ -34,6 +35,32 @@ setInterval(() => {
 }, 1000); // 1000ms == 1s
 */
 
+//Step 5: Upgrade
+const upgradeBtn = document.createElement("button");
+upgradeBtn.id = "upgrade-button";
+upgradeBtn.type = "button";
+upgradeBtn.innerText = "Buy Upgrade for 10 🍎's ";
+upgradeBtn.disabled = true; // not enabled till they can afford it
+
+upgradeBtn.addEventListener("click", () => {
+  if (counter >= 10) {
+    counter -= 10;
+    growthRate += 1; // increses auto growth rate
+
+    updateCounterDisplay();
+    updateUpgradeButton();
+  }
+});
+
+// function that updates counter display
+function updateCounterDisplay() {
+  counterDiv.textContent = `${Math.floor(counter)} apples`;
+}
+
+// function that enables & disables the upgrade button
+function updateUpgradeButton() {
+  upgradeBtn.disabled = counter < 10;
+}
 // Step 4: Continuous growth with requestAnimationFrame
 let lastTime = performance.now();
 
@@ -42,9 +69,10 @@ function update(time: number) {
   lastTime = time;
 
   // +1 per second, but scaled by dt
-  counter += dt;
+  counter += growthRate * dt;
   //Updating the display
-  counterDiv.textContent = `${Math.floor(counter)} apples`;
+  updateCounterDisplay();
+  updateUpgradeButton(); // enables and disables basned on counter
 
   requestAnimationFrame(update); // schedules the next fram
 }
@@ -55,5 +83,6 @@ requestAnimationFrame(update);
 const container = document.createElement("div");
 container.className = "magic-container";
 container.appendChild(btn);
-document.body.appendChild(container);
 document.body.appendChild(counterDiv);
+container.appendChild(upgradeBtn);
+document.body.appendChild(container);
