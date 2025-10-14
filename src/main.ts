@@ -9,110 +9,149 @@ document.body.innerHTML = `
 // Step 1: Button
 const emoji = "🍎";
 const btn = document.createElement("button");
-
 btn.id = "magic-button";
 btn.type = "button";
-btn.innerText = `${emoji}`; // emoji inside the button
+btn.innerText = `${emoji}`;
 
-// Step 2: Counter
 let counter: number = 0;
+let growthRate = 0;
+
+// Counter display
 const counterDiv = document.createElement("div");
 counterDiv.id = "counter-display";
 counterDiv.textContent = `${counter} apples`;
 
-// Step 5: Growth rate
-let growthRate = 0;
+// Growth rate display
+const growthDisplay = document.createElement("div");
+growthDisplay.id = "growth-display";
+growthDisplay.textContent = `Growth rate: ${growthRate.toFixed(2)} apples/sec`;
 
-// When the button is clicked, the counter increases
-btn.addEventListener("click", () => {
-  counter++;
-  updateCounterDisplay();
-  updateUpgradeButtons();
-});
-
-// Step 6: Multiple upgrades
+// Upgrade data
 type Upgrade = {
   name: string;
+  baseCost: number;
   cost: number;
-  rate: number;
+  growth: number;
+  count: number;
   button: HTMLButtonElement;
+  costDisplay: HTMLSpanElement;
+  countDisplay: HTMLSpanElement;
 };
 
-// The upgrades
 const upgrades: Upgrade[] = [
-  { name: "A", cost: 10, rate: 0.1, button: document.createElement("button") },
-  { name: "B", cost: 100, rate: 2.0, button: document.createElement("button") },
-  { name: "C", cost: 1000, rate: 50, button: document.createElement("button") },
+  {
+    name: "A",
+    baseCost: 10,
+    cost: 10,
+    growth: 0.1,
+    count: 0,
+    button: null!,
+    costDisplay: null!,
+    countDisplay: null!,
+  },
+  {
+    name: "B",
+    baseCost: 100,
+    cost: 100,
+    growth: 2.0,
+    count: 0,
+    button: null!,
+    costDisplay: null!,
+    countDisplay: null!,
+  },
+  {
+    name: "C",
+    baseCost: 1000,
+    cost: 1000,
+    growth: 50.0,
+    count: 0,
+    button: null!,
+    costDisplay: null!,
+    countDisplay: null!,
+  },
 ];
 
-// upgrade buttons
-for (const upgrade of upgrades) {
-  upgrade.button.type = "button";
-  upgrade.button.id = `upgrade-${upgrade.name}`;
-  upgrade.button.innerText =
-    `Buy Upgrade ${upgrade.name} for ${upgrade.cost} 🍎 (+${upgrade.rate}/sec)`;
-  upgrade.button.disabled = true;
-  upgrade.button.style.margin = "4px";
-  upgrade.button.style.padding = "8px";
-  upgrade.button.style.borderRadius = "8px";
+// uttons for each upgrade
+const upgradesContainer = document.createElement("div");
+upgradesContainer.id = "upgrades-container";
 
-  // Click behavior
-  upgrade.button.addEventListener("click", () => {
-    if (counter >= upgrade.cost) {
-      counter -= upgrade.cost;
-      growthRate += upgrade.rate;
+upgrades.forEach((u) => {
+  const div = document.createElement("div");
+  div.className = "upgrade-item";
+
+  const button = document.createElement("button");
+  button.id = `upgrade-${u.name}`;
+  button.innerText = `Buy Upgrade ${u.name}`;
+  button.disabled = true;
+
+  const costSpan = document.createElement("span");
+  costSpan.textContent = `Cost: ${u.cost.toFixed(2)}`;
+
+  const countSpan = document.createElement("span");
+  countSpan.textContent = `  Owned: ${u.count}`;
+  countSpan.style.marginLeft = "12px";
+
+  button.addEventListener("click", () => {
+    if (counter >= u.cost) {
+      counter -= u.cost;
+      growthRate += u.growth;
+      u.count++;
+      // Price increases by 15% each purchas
+      u.cost *= 1.15;
 
       updateCounterDisplay();
       updateUpgradeButtons();
     }
   });
-}
 
-// Function: update upgrade buttons
-function updateUpgradeButtons() {
-  for (const upgrade of upgrades) {
-    if (counter < upgrade.cost) {
-      upgrade.button.disabled = true;
-      upgrade.button.style.backgroundColor = "#777";
-      upgrade.button.style.color = "white";
-    } else {
-      upgrade.button.disabled = false;
-      upgrade.button.style.backgroundColor = "#4CAF50";
-      upgrade.button.style.color = "white";
-    }
-  }
-}
+  u.button = button;
+  u.costDisplay = costSpan;
+  u.countDisplay = countSpan;
 
-// Function: update counter display
+  div.append(button, costSpan, countSpan);
+  upgradesContainer.appendChild(div);
+});
+
+// Main click: increases counter manually
+btn.addEventListener("click", () => {
+  counter++;
+  updateCounterDisplay();
+});
+
+// Update displays
 function updateCounterDisplay() {
   counterDiv.textContent = `${Math.floor(counter)} apples`;
+  growthDisplay.textContent = `Growth rate: ${
+    growthRate.toFixed(2)
+  } apples/sec`;
+  upgrades.forEach((u) => {
+    u.costDisplay.textContent = `Cost: ${u.cost.toFixed(2)}`;
+    u.countDisplay.textContent = `Owned: ${u.count}`;
+  });
 }
 
-// Step 4: Continuous growth
-let lastTime = performance.now();
+function updateUpgradeButtons() {
+  upgrades.forEach((u) => {
+    u.button.disabled = counter < u.cost;
+  });
+}
 
+// Continuous growth (Step 4 logic preserved)
+let lastTime = performance.now();
 function update(time: number) {
-  const dt = (time - lastTime) / 1000; // delta time in seconds
+  const dt = (time - lastTime) / 1000;
   lastTime = time;
 
   counter += growthRate * dt;
   updateCounterDisplay();
   updateUpgradeButtons();
 
-  requestAnimationFrame(update); // next frame
+  requestAnimationFrame(update);
 }
-
-// Start animation loop
 requestAnimationFrame(update);
 
-// Add everything to the page
+// Add elements to page
 const container = document.createElement("div");
 container.className = "magic-container";
-container.appendChild(btn);
-document.body.appendChild(counterDiv);
-
-for (const upgrade of upgrades) {
-  container.appendChild(upgrade.button);
-}
-
-document.body.appendChild(container);
+container.append(btn);
+document.body.append(counterDiv, growthDisplay, upgradesContainer, container);
