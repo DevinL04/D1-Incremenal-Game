@@ -51,15 +51,49 @@ interface Item {
   cost: number;
   growth: number;
   count: number;
+  description: string;
   button?: HTMLButtonElement;
   costSpan?: HTMLSpanElement;
   countSpan?: HTMLSpanElement;
 }
 
 const availableItems: Item[] = [
-  { name: "Sapling", cost: 10, growth: 0.1, count: 0 },
-  { name: "Apple Tree", cost: 100, growth: 2, count: 0 },
-  { name: "Orchard", cost: 1000, growth: 50, count: 0 },
+  {
+    name: "Sapling",
+    cost: 10,
+    growth: 0.1,
+    count: 0,
+    description: "A tiny apple sapling to start your orchard",
+  },
+  {
+    name: "Apple Tree",
+    cost: 100,
+    growth: 2,
+    count: 0,
+    description: "A mature apple tree producing steady apples",
+  },
+  {
+    name: "Orchard",
+    cost: 1000,
+    growth: 50,
+    count: 0,
+    description: "A full orchard yielding lots of apples",
+  },
+  //two new items
+  {
+    name: "Greenhouse",
+    cost: 5000,
+    growth: 250,
+    count: 0,
+    description: "A warm greenhouse to grow apples faster",
+  },
+  {
+    name: "Automated Picker",
+    cost: 20000,
+    growth: 1200,
+    count: 0,
+    description: "Robots that harvest apples for you automatically",
+  },
 ];
 
 // uttons for each upgrade
@@ -82,11 +116,16 @@ availableItems.forEach((item) => {
   countSpan.textContent = `  Owned: ${item.count}`;
   countSpan.style.marginLeft = "12px";
 
+  const descriptionSpan = document.createElement("span"); // Step 10
+  descriptionSpan.textContent = item.description;
+  descriptionSpan.style.marginLeft = "12px";
+  descriptionSpan.style.fontStyle = "italic";
+
   // info span to keep cost and owned separate
   const infoSpan = document.createElement("span");
   infoSpan.style.display = "inline-flex";
   infoSpan.style.gap = "12px";
-  infoSpan.append(costSpan, countSpan);
+  infoSpan.append(costSpan, countSpan, descriptionSpan);
 
   button.addEventListener("click", () => {
     if (counter >= item.cost) {
