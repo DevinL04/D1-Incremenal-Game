@@ -12,6 +12,14 @@ const btn = document.createElement("button");
 btn.id = "magic-button";
 btn.type = "button";
 btn.innerText = `${emoji}`;
+btn.style.fontSize = "48px";
+btn.style.width = "120px";
+btn.style.height = "120px";
+btn.style.borderRadius = "50%";
+btn.style.backgroundColor = "#e63946";
+btn.style.border = "4px solid #6a994e";
+btn.style.color = "white";
+btn.style.cursor = "pointer";
 
 let counter: number = 0;
 let growthRate = 0;
@@ -21,6 +29,12 @@ const counterDiv = document.createElement("div");
 counterDiv.id = "counter-display";
 counterDiv.textContent = `${counter} apples`;
 
+//Theme of game
+const lore = document.createElement("p");
+lore.textContent =
+  "Welcome to the Apple Orchard! Plant saplings, grow trees, and expand your orchard to harvest more apples!";
+//document.body.insertBefore(lore, counterDiv);
+
 // Growth rate display
 const growthDisplay = document.createElement("div");
 growthDisplay.id = "growth-display";
@@ -29,6 +43,7 @@ growthDisplay.textContent = `Growth rate: ${growthRate.toFixed(2)} apples/sec`;
 // Upgrade data
 type Upgrade = {
   name: string;
+  themedName: string;
   baseCost: number;
   cost: number;
   growth: number;
@@ -41,6 +56,7 @@ type Upgrade = {
 const upgrades: Upgrade[] = [
   {
     name: "A",
+    themedName: "Sapling",
     baseCost: 10,
     cost: 10,
     growth: 0.1,
@@ -51,6 +67,7 @@ const upgrades: Upgrade[] = [
   },
   {
     name: "B",
+    themedName: "Apple Tree",
     baseCost: 100,
     cost: 100,
     growth: 2.0,
@@ -61,6 +78,7 @@ const upgrades: Upgrade[] = [
   },
   {
     name: "C",
+    themedName: "Orchard",
     baseCost: 1000,
     cost: 1000,
     growth: 50.0,
@@ -81,7 +99,7 @@ upgrades.forEach((u) => {
 
   const button = document.createElement("button");
   button.id = `upgrade-${u.name}`;
-  button.innerText = `Buy Upgrade ${u.name}`;
+  button.innerText = `Buy ${u.themedName}`;
   button.disabled = true;
 
   const costSpan = document.createElement("span");
@@ -108,7 +126,14 @@ upgrades.forEach((u) => {
   u.costDisplay = costSpan;
   u.countDisplay = countSpan;
 
-  div.append(button, costSpan, countSpan);
+  //div.append(button, costSpan, countSpan);
+  const infoSpan = document.createElement("span");
+  infoSpan.style.display = "inline-flex";
+  infoSpan.style.gap = "12px";
+  infoSpan.append(costSpan, countSpan);
+
+  div.append(button, infoSpan);
+
   upgradesContainer.appendChild(div);
 });
 
@@ -120,7 +145,7 @@ btn.addEventListener("click", () => {
 
 // Update displays
 function updateCounterDisplay() {
-  counterDiv.textContent = `${Math.floor(counter)} apples`;
+  counterDiv.textContent = `Harvested Apples: ${Math.floor(counter)} apples`;
   growthDisplay.textContent = `Growth rate: ${
     growthRate.toFixed(2)
   } apples/sec`;
@@ -133,6 +158,11 @@ function updateCounterDisplay() {
 function updateUpgradeButtons() {
   upgrades.forEach((u) => {
     u.button.disabled = counter < u.cost;
+    u.button.style.backgroundColor = u.button.disabled ? "#777" : "#4CAF50";
+    u.button.style.color = "white";
+    u.button.style.padding = "8px";
+    u.button.style.borderRadius = "8px";
+    u.button.style.margin = "4px";
   });
 }
 
@@ -153,5 +183,5 @@ requestAnimationFrame(update);
 // Add elements to page
 const container = document.createElement("div");
 container.className = "magic-container";
-container.append(btn);
-document.body.append(counterDiv, growthDisplay, upgradesContainer, container);
+container.append(lore, btn, counterDiv, growthDisplay, upgradesContainer);
+document.body.appendChild(container);
