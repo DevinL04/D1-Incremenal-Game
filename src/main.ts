@@ -19,70 +19,100 @@ let counter: number = 0;
 const counterDiv = document.createElement("div");
 counterDiv.id = "counter-display";
 counterDiv.textContent = `${counter} apples`;
-// Step 5:
+
+// Step 5: Growth rate
 let growthRate = 0;
-// When the button is clicked the counter increases
+
+// When the button is clicked, the counter increases
 btn.addEventListener("click", () => {
   counter++;
-  counterDiv.textContent = `${counter} apples`; // update the number of apples displayed
+  updateCounterDisplay();
+  updateUpgradeButtons();
 });
 
-// Step 3: Auto clicking every second
-/*
-setInterval(() => {
-  counter++; //+1
-  counterDiv.textContent = `${counter} apples`;
-}, 1000); // 1000ms == 1s
-*/
+// Step 6: Multiple upgrades
+type Upgrade = {
+  name: string;
+  cost: number;
+  rate: number;
+  button: HTMLButtonElement;
+};
 
-//Step 5: Upgrade
-const upgradeBtn = document.createElement("button");
-upgradeBtn.id = "upgrade-button";
-upgradeBtn.type = "button";
-upgradeBtn.innerText = "Buy Upgrade for 10 🍎's ";
-upgradeBtn.disabled = true; // not enabled till they can afford it
+// The upgrades
+const upgrades: Upgrade[] = [
+  { name: "A", cost: 10, rate: 0.1, button: document.createElement("button") },
+  { name: "B", cost: 100, rate: 2.0, button: document.createElement("button") },
+  { name: "C", cost: 1000, rate: 50, button: document.createElement("button") },
+];
 
-upgradeBtn.addEventListener("click", () => {
-  if (counter >= 10) {
-    counter -= 10;
-    growthRate += 1; // increses auto growth rate
+// upgrade buttons
+for (const upgrade of upgrades) {
+  upgrade.button.type = "button";
+  upgrade.button.id = `upgrade-${upgrade.name}`;
+  upgrade.button.innerText = `Buy Upgrade ${upgrade.name} for ${upgrade.cost} 🍎 (+${upgrade.rate}/sec)`;
+  upgrade.button.disabled = true;
+  upgrade.button.style.margin = "4px";
+  upgrade.button.style.padding = "8px";
+  upgrade.button.style.borderRadius = "8px";
 
-    updateCounterDisplay();
-    updateUpgradeButton();
+  // Click behavior
+  upgrade.button.addEventListener("click", () => {
+    if (counter >= upgrade.cost) {
+      counter -= upgrade.cost;
+      growthRate += upgrade.rate;
+
+      updateCounterDisplay();
+      updateUpgradeButtons();
+    }
+  });
+}
+
+// Function: update upgrade buttons 
+function updateUpgradeButtons() {
+  for (const upgrade of upgrades) {
+    if (counter < upgrade.cost) {
+      upgrade.button.disabled = true;
+      upgrade.button.style.backgroundColor = "#777"; 
+      upgrade.button.style.color = "white";
+    } else {
+      upgrade.button.disabled = false;
+      upgrade.button.style.backgroundColor = "#4CAF50"; 
+      upgrade.button.style.color = "white";
+    }
   }
-});
+}
 
-// function that updates counter display
+// Function: update counter display
 function updateCounterDisplay() {
   counterDiv.textContent = `${Math.floor(counter)} apples`;
 }
 
-// function that enables & disables the upgrade button
-function updateUpgradeButton() {
-  upgradeBtn.disabled = counter < 10;
-}
-// Step 4: Continuous growth with requestAnimationFrame
+// Step 4: Continuous growth
 let lastTime = performance.now();
 
 function update(time: number) {
-  const dt = (time - lastTime) / 1000; //delta time inseconds
+  const dt = (time - lastTime) / 1000; // delta time in seconds
   lastTime = time;
 
-  // +1 per second, but scaled by dt
   counter += growthRate * dt;
-  //Updating the display
   updateCounterDisplay();
-  updateUpgradeButton(); // enables and disables basned on counter
+  updateUpgradeButtons();
 
-  requestAnimationFrame(update); // schedules the next fram
+  requestAnimationFrame(update); // next frame
 }
-// start animation loop
+
+// Start animation loop
 requestAnimationFrame(update);
 
-//Add to the page
+// Add everything to the page
 const container = document.createElement("div");
 container.className = "magic-container";
 container.appendChild(btn);
 document.body.appendChild(counterDiv);
-container.appendChild(upgradeBtn);
+
+for (const upgrade of upgrades) {
+  container.appendChild(upgrade.button);
+}
+
 document.body.appendChild(container);
+
