@@ -1,10 +1,16 @@
 import exampleIconUrl from "./noun-paperclip-7598668-00449F.png";
 import "./style.css";
 
-/* --- existing content --- */
-document.body.innerHTML = `
-  <p>Example image asset: <img src="${exampleIconUrl}" class="icon" /></p>
-`;
+// Add example image without overwriting body
+const exampleImg = document.createElement("img");
+exampleImg.src = exampleIconUrl;
+exampleImg.className = "icon";
+
+const exampleP = document.createElement("p");
+exampleP.textContent = "Example image asset: ";
+exampleP.appendChild(exampleImg);
+
+document.body.appendChild(exampleP);
 
 // Step 1: Button
 const emoji = "🍎";
@@ -33,136 +39,101 @@ counterDiv.textContent = `${counter} apples`;
 const lore = document.createElement("p");
 lore.textContent =
   "Welcome to the Apple Orchard! Plant saplings, grow trees, and expand your orchard to harvest more apples!";
-//document.body.insertBefore(lore, counterDiv);
 
 // Growth rate display
 const growthDisplay = document.createElement("div");
 growthDisplay.id = "growth-display";
 growthDisplay.textContent = `Growth rate: ${growthRate.toFixed(2)} apples/sec`;
 
-// Upgrade data
-type Upgrade = {
+// Step 6–9: Upgrade data
+interface Item {
   name: string;
-  themedName: string;
-  baseCost: number;
   cost: number;
   growth: number;
   count: number;
-  button: HTMLButtonElement;
-  costDisplay: HTMLSpanElement;
-  countDisplay: HTMLSpanElement;
-};
+  button?: HTMLButtonElement;
+  costSpan?: HTMLSpanElement;
+  countSpan?: HTMLSpanElement;
+}
 
-const upgrades: Upgrade[] = [
-  {
-    name: "A",
-    themedName: "Sapling",
-    baseCost: 10,
-    cost: 10,
-    growth: 0.1,
-    count: 0,
-    button: null!,
-    costDisplay: null!,
-    countDisplay: null!,
-  },
-  {
-    name: "B",
-    themedName: "Apple Tree",
-    baseCost: 100,
-    cost: 100,
-    growth: 2.0,
-    count: 0,
-    button: null!,
-    costDisplay: null!,
-    countDisplay: null!,
-  },
-  {
-    name: "C",
-    themedName: "Orchard",
-    baseCost: 1000,
-    cost: 1000,
-    growth: 50.0,
-    count: 0,
-    button: null!,
-    costDisplay: null!,
-    countDisplay: null!,
-  },
+const availableItems: Item[] = [
+  { name: "Sapling", cost: 10, growth: 0.1, count: 0 },
+  { name: "Apple Tree", cost: 100, growth: 2, count: 0 },
+  { name: "Orchard", cost: 1000, growth: 50, count: 0 },
 ];
 
 // uttons for each upgrade
 const upgradesContainer = document.createElement("div");
 upgradesContainer.id = "upgrades-container";
 
-upgrades.forEach((u) => {
+availableItems.forEach((item) => {
   const div = document.createElement("div");
   div.className = "upgrade-item";
 
   const button = document.createElement("button");
-  button.id = `upgrade-${u.name}`;
-  button.innerText = `Buy ${u.themedName}`;
+  button.id = `upgrade-${item.name}`;
+  button.innerText = `Buy ${item.name}`;
   button.disabled = true;
 
   const costSpan = document.createElement("span");
-  costSpan.textContent = `Cost: ${u.cost.toFixed(2)}`;
+  costSpan.textContent = `Cost: ${item.cost.toFixed(2)}`;
 
   const countSpan = document.createElement("span");
-  countSpan.textContent = `  Owned: ${u.count}`;
+  countSpan.textContent = `  Owned: ${item.count}`;
   countSpan.style.marginLeft = "12px";
 
-  button.addEventListener("click", () => {
-    if (counter >= u.cost) {
-      counter -= u.cost;
-      growthRate += u.growth;
-      u.count++;
-      // Price increases by 15% each purchas
-      u.cost *= 1.15;
-
-      updateCounterDisplay();
-      updateUpgradeButtons();
-    }
-  });
-
-  u.button = button;
-  u.costDisplay = costSpan;
-  u.countDisplay = countSpan;
-
-  //div.append(button, costSpan, countSpan);
+  // info span to keep cost and owned separate
   const infoSpan = document.createElement("span");
   infoSpan.style.display = "inline-flex";
   infoSpan.style.gap = "12px";
   infoSpan.append(costSpan, countSpan);
 
-  div.append(button, infoSpan);
+  button.addEventListener("click", () => {
+    if (counter >= item.cost) {
+      counter -= item.cost;
+      growthRate += item.growth;
+      item.count++;
+      // Price increases by 15% each purchas
+      item.cost *= 1.15;
 
+      updateDisplays();
+    }
+  });
+
+  div.append(button, infoSpan);
   upgradesContainer.appendChild(div);
+
+  item.button = button;
+  item.costSpan = costSpan;
+  item.countSpan = countSpan;
 });
 
 // Main click: increases counter manually
 btn.addEventListener("click", () => {
   counter++;
-  updateCounterDisplay();
+  updateDisplays();
 });
 
 // Update displays
-function updateCounterDisplay() {
+function updateDisplays() {
   counterDiv.textContent = `Harvested Apples: ${Math.floor(counter)} apples`;
   growthDisplay.textContent = `Growth rate: ${
     growthRate.toFixed(2)
   } apples/sec`;
-  upgrades.forEach((u) => {
-    u.costDisplay.textContent = `Cost: ${u.cost.toFixed(2)}`;
-    u.countDisplay.textContent = `Owned: ${u.count}`;
-  });
-}
 
-function updateUpgradeButtons() {
-  upgrades.forEach((u) => {
-    u.button.disabled = counter < u.cost;
-    u.button.style.backgroundColor = u.button.disabled ? "#777" : "#4CAF50";
-    u.button.style.color = "white";
-    u.button.style.padding = "8px";
-    u.button.style.borderRadius = "8px";
-    u.button.style.margin = "4px";
+  availableItems.forEach((item) => {
+    if (item.costSpan && item.countSpan && item.button) {
+      item.costSpan.textContent = `Cost: ${item.cost.toFixed(2)}`;
+      item.countSpan.textContent = `Owned: ${item.count}`;
+      item.button.disabled = counter < item.cost;
+      item.button.style.backgroundColor = item.button.disabled
+        ? "#777"
+        : "#4CAF50";
+      item.button.style.color = "white";
+      item.button.style.padding = "8px";
+      item.button.style.borderRadius = "8px";
+      item.button.style.margin = "4px";
+    }
   });
 }
 
@@ -173,8 +144,7 @@ function update(time: number) {
   lastTime = time;
 
   counter += growthRate * dt;
-  updateCounterDisplay();
-  updateUpgradeButtons();
+  updateDisplays();
 
   requestAnimationFrame(update);
 }
