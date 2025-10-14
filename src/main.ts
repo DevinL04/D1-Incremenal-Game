@@ -49,7 +49,8 @@ const upgrades: Upgrade[] = [
 for (const upgrade of upgrades) {
   upgrade.button.type = "button";
   upgrade.button.id = `upgrade-${upgrade.name}`;
-  upgrade.button.innerText = `Buy Upgrade ${upgrade.name} for ${upgrade.cost} 🍎 (+${upgrade.rate}/sec)`;
+  upgrade.button.innerText =
+    `Buy Upgrade ${upgrade.name} for ${upgrade.cost} 🍎 (+${upgrade.rate}/sec)`;
   upgrade.button.disabled = true;
   upgrade.button.style.margin = "4px";
   upgrade.button.style.padding = "8px";
@@ -67,16 +68,16 @@ for (const upgrade of upgrades) {
   });
 }
 
-// Function: update upgrade buttons 
+// Function: update upgrade buttons
 function updateUpgradeButtons() {
   for (const upgrade of upgrades) {
     if (counter < upgrade.cost) {
       upgrade.button.disabled = true;
-      upgrade.button.style.backgroundColor = "#777"; 
+      upgrade.button.style.backgroundColor = "#777";
       upgrade.button.style.color = "white";
     } else {
       upgrade.button.disabled = false;
-      upgrade.button.style.backgroundColor = "#4CAF50"; 
+      upgrade.button.style.backgroundColor = "#4CAF50";
       upgrade.button.style.color = "white";
     }
   }
@@ -115,4 +116,3 @@ for (const upgrade of upgrades) {
 }
 
 document.body.appendChild(container);
-
