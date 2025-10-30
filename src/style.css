@@ -3,3 +3,27 @@
   vertical-align: top;
   border: 1px solid salmon;
 }
+
+.pulse {
+  animation: pulseAnim 0.2s ease;
+}
+
+@keyframes pulseAnim {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.25);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+button {
+  z-index: 0; /* or 0 */
+}
+
+#tooltip {
+  z-index: 9999;
+}

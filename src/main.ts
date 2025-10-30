@@ -11,6 +11,18 @@ exampleP.textContent = "Example image asset: ";
 exampleP.appendChild(exampleImg);
 
 document.body.appendChild(exampleP);
+const tooltip = document.createElement("div");
+tooltip.id = "tooltip";
+tooltip.textContent = "Click to harvest apples";
+tooltip.style.position = "absolute";
+tooltip.style.padding = "6px 10px";
+tooltip.style.background = "black";
+tooltip.style.color = "white";
+tooltip.style.borderRadius = "6px";
+tooltip.style.fontSize = "14px";
+tooltip.style.pointerEvents = "none";
+tooltip.style.visibility = "hidden";
+document.body.appendChild(tooltip);
 
 // Step 1: Button
 const emoji = "🍎";
@@ -26,6 +38,9 @@ btn.style.backgroundColor = "#e63946";
 btn.style.border = "4px solid #6a994e";
 btn.style.color = "white";
 btn.style.cursor = "pointer";
+
+// animation code
+btn.style.transition = "transform 0.15s ease";
 
 let counter: number = 0;
 let growthRate = 0;
@@ -151,6 +166,12 @@ availableItems.forEach((item) => {
 btn.addEventListener("click", () => {
   counter++;
   updateDisplays();
+
+  // animation code
+  btn.style.transform = "scale(1.2)";
+  setTimeout(() => {
+    btn.style.transform = "scale(1)";
+  }, 120);
 });
 
 // Update displays
@@ -188,6 +209,19 @@ function update(time: number) {
   requestAnimationFrame(update);
 }
 requestAnimationFrame(update);
+
+btn.addEventListener("mouseenter", () => {
+  tooltip.style.visibility = "visible";
+});
+
+btn.addEventListener("mousemove", (e) => {
+  tooltip.style.left = `${e.pageX + 12}px`;
+  tooltip.style.top = `${e.pageY + 12}px`;
+});
+
+btn.addEventListener("mouseleave", () => {
+  tooltip.style.visibility = "hidden";
+});
 
 // Add elements to page
 const container = document.createElement("div");
