@@ -1,16 +1,6 @@
-import exampleIconUrl from "./noun-paperclip-7598668-00449F.png";
 import "./style.css";
 
-// Add example image without overwriting body
-const exampleImg = document.createElement("img");
-exampleImg.src = exampleIconUrl;
-exampleImg.className = "icon";
-
-const exampleP = document.createElement("p");
-exampleP.textContent = "Example image asset: ";
-exampleP.appendChild(exampleImg);
-
-document.body.appendChild(exampleP);
+// --- Tooltip ---
 const tooltip = document.createElement("div");
 tooltip.id = "tooltip";
 tooltip.textContent = "Click to harvest apples";
@@ -22,45 +12,35 @@ tooltip.style.borderRadius = "6px";
 tooltip.style.fontSize = "14px";
 tooltip.style.pointerEvents = "none";
 tooltip.style.visibility = "hidden";
+tooltip.style.zIndex = "1000";
 document.body.appendChild(tooltip);
 
-// Step 1: Button
+// --- Harvest Button ---
 const emoji = "🍎";
-const btn = document.createElement("button");
-btn.id = "magic-button";
-btn.type = "button";
-btn.innerText = `${emoji}`;
-btn.style.fontSize = "48px";
-btn.style.width = "120px";
-btn.style.height = "120px";
-btn.style.borderRadius = "50%";
-btn.style.backgroundColor = "#e63946";
-btn.style.border = "4px solid #6a994e";
-btn.style.color = "white";
-btn.style.cursor = "pointer";
+const harvestButton = document.createElement("button");
+harvestButton.id = "magic-button";
+harvestButton.type = "button";
+harvestButton.innerText = `${emoji}`;
+harvestButton.classList.add("harvest-button"); // CSS class for styles
 
-// animation code
-btn.style.transition = "transform 0.15s ease";
-
+// --- Game State ---
 let counter: number = 0;
 let growthRate = 0;
 
-// Counter display
+// --- UI Elements ---
 const counterDiv = document.createElement("div");
 counterDiv.id = "counter-display";
 counterDiv.textContent = `${counter} apples`;
 
-//Theme of game
 const lore = document.createElement("p");
 lore.textContent =
   "Welcome to the Apple Orchard! Plant saplings, grow trees, and expand your orchard to harvest more apples!";
 
-// Growth rate display
 const growthDisplay = document.createElement("div");
 growthDisplay.id = "growth-display";
 growthDisplay.textContent = `Growth rate: ${growthRate.toFixed(2)} apples/sec`;
 
-// Step 6–9: Upgrade data
+// --- Upgrade Data ---
 interface Item {
   name: string;
   cost: number;
@@ -94,7 +74,6 @@ const availableItems: Item[] = [
     count: 0,
     description: "A full orchard yielding lots of apples",
   },
-  //two new items
   {
     name: "Greenhouse",
     cost: 5000,
@@ -111,7 +90,7 @@ const availableItems: Item[] = [
   },
 ];
 
-// uttons for each upgrade
+// --- Upgrades Container ---
 const upgradesContainer = document.createElement("div");
 upgradesContainer.id = "upgrades-container";
 
@@ -123,6 +102,7 @@ availableItems.forEach((item) => {
   button.id = `upgrade-${item.name}`;
   button.innerText = `Buy ${item.name}`;
   button.disabled = true;
+  button.classList.add("upgrade-button");
 
   const costSpan = document.createElement("span");
   costSpan.textContent = `Cost: ${item.cost.toFixed(2)}`;
@@ -131,12 +111,11 @@ availableItems.forEach((item) => {
   countSpan.textContent = `  Owned: ${item.count}`;
   countSpan.style.marginLeft = "12px";
 
-  const descriptionSpan = document.createElement("span"); // Step 10
+  const descriptionSpan = document.createElement("span");
   descriptionSpan.textContent = item.description;
   descriptionSpan.style.marginLeft = "12px";
   descriptionSpan.style.fontStyle = "italic";
 
-  // info span to keep cost and owned separate
   const infoSpan = document.createElement("span");
   infoSpan.style.display = "inline-flex";
   infoSpan.style.gap = "12px";
@@ -147,9 +126,7 @@ availableItems.forEach((item) => {
       counter -= item.cost;
       growthRate += item.growth;
       item.count++;
-      // Price increases by 15% each purchas
       item.cost *= 1.15;
-
       updateDisplays();
     }
   });
@@ -162,19 +139,18 @@ availableItems.forEach((item) => {
   item.countSpan = countSpan;
 });
 
-// Main click: increases counter manually
-btn.addEventListener("click", () => {
+// --- Harvest Button Click ---
+harvestButton.addEventListener("click", () => {
   counter++;
   updateDisplays();
 
-  // animation code
-  btn.style.transform = "scale(1.2)";
+  harvestButton.style.transform = "scale(1.2)";
   setTimeout(() => {
-    btn.style.transform = "scale(1)";
+    harvestButton.style.transform = "scale(1)";
   }, 120);
 });
 
-// Update displays
+// --- Update Displays ---
 function updateDisplays() {
   counterDiv.textContent = `Harvested Apples: ${Math.floor(counter)} apples`;
   growthDisplay.textContent = `Growth rate: ${
@@ -186,45 +162,43 @@ function updateDisplays() {
       item.costSpan.textContent = `Cost: ${item.cost.toFixed(2)}`;
       item.countSpan.textContent = `Owned: ${item.count}`;
       item.button.disabled = counter < item.cost;
-      item.button.style.backgroundColor = item.button.disabled
-        ? "#777"
-        : "#4CAF50";
-      item.button.style.color = "white";
-      item.button.style.padding = "8px";
-      item.button.style.borderRadius = "8px";
-      item.button.style.margin = "4px";
     }
   });
 }
 
-// Continuous growth (Step 4 logic preserved)
+// --- Continuous Growth ---
 let lastTime = performance.now();
-function update(time: number) {
+function gameLoop(time: number) {
   const dt = (time - lastTime) / 1000;
   lastTime = time;
 
   counter += growthRate * dt;
   updateDisplays();
 
-  requestAnimationFrame(update);
+  requestAnimationFrame(gameLoop);
 }
-requestAnimationFrame(update);
+requestAnimationFrame(gameLoop);
 
-btn.addEventListener("mouseenter", () => {
+// --- Tooltip Events ---
+harvestButton.addEventListener("mouseenter", () => {
   tooltip.style.visibility = "visible";
 });
-
-btn.addEventListener("mousemove", (e) => {
+harvestButton.addEventListener("mousemove", (e) => {
   tooltip.style.left = `${e.pageX + 12}px`;
   tooltip.style.top = `${e.pageY + 12}px`;
 });
-
-btn.addEventListener("mouseleave", () => {
+harvestButton.addEventListener("mouseleave", () => {
   tooltip.style.visibility = "hidden";
 });
 
-// Add elements to page
+// --- Append Elements ---
 const container = document.createElement("div");
 container.className = "magic-container";
-container.append(lore, btn, counterDiv, growthDisplay, upgradesContainer);
+container.append(
+  lore,
+  harvestButton,
+  counterDiv,
+  growthDisplay,
+  upgradesContainer,
+);
 document.body.appendChild(container);
